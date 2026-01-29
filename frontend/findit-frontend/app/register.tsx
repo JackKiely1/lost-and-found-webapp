@@ -44,7 +44,7 @@ export default function Register() {
       Alert.alert("Passwords don't match", "Please ensure both passwords match.");
       return;
     }
-    Alert.alert("Register (placeholder)", "Backend registration will be added next.");
+    Alert.alert("Register (test)", "Backend to be completed.");
   };
   return (
     <View style={styles.container}>

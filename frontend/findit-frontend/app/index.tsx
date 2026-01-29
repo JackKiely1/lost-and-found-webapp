@@ -32,7 +32,7 @@ export default function Login() {
       Alert.alert("SETU accounts only", "Please use your @setu.ie email.");
       return;
     }
-    Alert.alert("Login (placeholder)", "Backend login will be added next.");
+    Alert.alert("Login (test)", "Backend to be completed.");
   };
   return (
     <View style={styles.container}>
