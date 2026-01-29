@@ -1,22 +1,77 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useMemo, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
+import { isBasicEmailFormat, isSetuEmail } from "../src/utils/validators"
 import { Link } from "expo-router";
 
 export default function Login() {
+    const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const emailTrimmed = email.trim();
+
+  const isEmailValid = useMemo(() => {
+    return isBasicEmailFormat(emailTrimmed) && isSetuEmail(emailTrimmed);
+  }, [emailTrimmed]);
+
+  const canSubmit =
+    emailTrimmed.length > 0 && password.length > 0 && isEmailValid;
+
+  const handleLogin = () => {
+    if (!emailTrimmed || !password) {
+      Alert.alert(
+        "Missing details",
+        "Please enter your SETU email and password."
+      );
+      return;
+    }
+    if (!isBasicEmailFormat(emailTrimmed)) {
+      Alert.alert("Invalid email", "Please enter a valid email address.");
+      return;
+    }
+    if (!isSetuEmail(emailTrimmed)) {
+      Alert.alert("SETU accounts only", "Please use your @setu.ie email.");
+      return;
+    }
+    Alert.alert("Login (placeholder)", "Backend login will be added next.");
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back.</Text>
       <Text style={styles.subtitle}>Log in to continue to FindIT.</Text>
 
-      <View style={styles.input} />
-      <View style={styles.input} />
+      <TextInput
+        style={styles.input}
+        placeholder="name@setu.ie"
+        placeholderTextColor="#888"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={email}
+        onChangeText={setEmail}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#888"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+
 
       <TouchableOpacity>
         <Text style={styles.forgot}>Forgot password?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Log in</Text>
-      </TouchableOpacity>
+<TouchableOpacity
+  style={[styles.button, !canSubmit && styles.buttonDisabled]}
+  onPress={handleLogin}
+  disabled={!canSubmit}
+>
+  <Text style={styles.buttonText}>Log in</Text>
+</TouchableOpacity>
+
 
       <Text style={styles.bottomText}>Don't have an account?</Text>
       <Link href="/register" style={styles.link}>
@@ -75,5 +130,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textDecorationLine: "underline",
     fontWeight: "600",
+  },
+    buttonDisabled: {
+    opacity: 0.5,
   },
 });

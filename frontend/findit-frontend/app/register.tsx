@@ -1,19 +1,100 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useMemo, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
+import { isBasicEmailFormat, isSetuEmail } from "../src/utils/validators";
 import { Link } from "expo-router";
 
 export default function Register() {
+    const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const emailTrimmed = email.trim();
+
+  const isEmailValid = useMemo(() => {
+    return isBasicEmailFormat(emailTrimmed) && isSetuEmail(emailTrimmed);
+  }, [emailTrimmed]);
+
+  const passwordsMatch = password.length > 0 && password === confirmPassword;
+
+  const canSubmit =
+    fullName.trim().length > 0 &&
+    isEmailValid &&
+    password.length >= 6 &&
+    passwordsMatch;
+
+  const handleRegister = () => {
+    if (!fullName.trim() || !emailTrimmed || !password || !confirmPassword) {
+      Alert.alert("Missing details", "Please complete all fields.");
+      return;
+    }
+    if (!isBasicEmailFormat(emailTrimmed)) {
+      Alert.alert("Invalid email", "Please enter a valid email address.");
+      return;
+    }
+    if (!isSetuEmail(emailTrimmed)) {
+      Alert.alert("SETU accounts only", "Please use your @setu.ie email.");
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert("Password too short", "Password must be at least 6 characters.");
+      return;
+    }
+    if (!passwordsMatch) {
+      Alert.alert("Passwords don't match", "Please ensure both passwords match.");
+      return;
+    }
+    Alert.alert("Register (placeholder)", "Backend registration will be added next.");
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account.</Text>
       <Text style={styles.subtitle}>Sign up to start using FindIT.</Text>
 
-      <View style={styles.input} />
-      <View style={styles.input} />
-      <View style={styles.input} />
-      <View style={styles.input} />
+            <TextInput
+        style={styles.input}
+        placeholder="Full Name"
+        placeholderTextColor="#888"
+        autoCapitalize="words"
+        value={fullName}
+        onChangeText={setFullName}
+      />
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Create Account</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="name@setu.ie"
+        placeholderTextColor="#888"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={email}
+        onChangeText={setEmail}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Password (min 6 chars)"
+        placeholderTextColor="#888"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        placeholderTextColor="#888"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
+
+
+       <TouchableOpacity
+        style={[styles.button, !canSubmit && styles.buttonDisabled]}
+        onPress={handleRegister}
+        disabled={!canSubmit}>
+       <Text style={styles.buttonText}>Create Account</Text>
       </TouchableOpacity>
 
       <Text style={styles.bottomText}>Already have an account?</Text>
@@ -68,5 +149,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textDecorationLine: "underline",
     fontWeight: "600",
+  },
+    buttonDisabled: {
+    opacity: 0.5,
   },
 });
