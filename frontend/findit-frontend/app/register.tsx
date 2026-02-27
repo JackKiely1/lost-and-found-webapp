@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
 import { isBasicEmailFormat, isSetuEmail } from "../src/utils/validators";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { registerUser } from "../src/services/authService";
+
 
 export default function Register() {
+  const router = useRouter();
     const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +26,7 @@ export default function Register() {
     password.length >= 6 &&
     passwordsMatch;
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!fullName.trim() || !emailTrimmed || !password || !confirmPassword) {
       Alert.alert("Missing details", "Please complete all fields.");
       return;
@@ -44,7 +47,19 @@ export default function Register() {
       Alert.alert("Passwords don't match", "Please ensure both passwords match.");
       return;
     }
-    Alert.alert("Register (test)", "Backend to be completed.");
+    try {
+  await registerUser({
+    fullName: fullName.trim(),
+    email: emailTrimmed,
+    password,
+  });
+
+  Alert.alert("Account created", "Your account was created. Please log in.", [
+    { text: "Go to Login", onPress: () => router.replace("/") },
+  ]);
+} catch (err: any) {
+  Alert.alert("Register failed", err.message || "Something went wrong");
+}
   };
   return (
     <View style={styles.container}>
