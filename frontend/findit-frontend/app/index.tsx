@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
 import { isBasicEmailFormat, isSetuEmail } from "../src/utils/validators"
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { loginUser } from "../src/services/authService";
 
 export default function Login() {
-    const [email, setEmail] = useState("");
+  const router = useRouter();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const emailTrimmed = email.trim();
@@ -16,8 +18,9 @@ export default function Login() {
   const canSubmit =
     emailTrimmed.length > 0 && password.length > 0 && isEmailValid;
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!emailTrimmed || !password) {
+
       Alert.alert(
         "Missing details",
         "Please enter your SETU email and password."
@@ -32,7 +35,14 @@ export default function Login() {
       Alert.alert("SETU accounts only", "Please use your @setu.ie email.");
       return;
     }
-    Alert.alert("Login (test)", "Backend to be completed.");
+    try { 
+  const data = await loginUser({ email: emailTrimmed, password });
+
+  Alert.alert("Login success", `Welcome ${data.user.fullName}`);
+
+} catch (err: any) {
+  Alert.alert("Login failed", err.message || "Something went wrong");
+}
   };
   return (
     <View style={styles.container}>
