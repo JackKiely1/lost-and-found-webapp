@@ -87,6 +87,9 @@ export default function Login() {
       <Link href="/register" style={styles.link}>
         Register Here
       </Link>
+      <Link href="/report-lost" style={styles.link}>
+      Go to Report Lost (test)
+     </Link>
     </View>
   );
 }
