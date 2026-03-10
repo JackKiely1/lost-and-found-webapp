@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { createItem } from "../../src/services/itemService";
 
 export default function ReportLostItem() {
   const [itemName, setItemName] = useState("");
@@ -16,9 +17,28 @@ export default function ReportLostItem() {
     );
   }, [itemName, category, location, description]);
 
-  const handleSubmit = () => {
-    Alert.alert("Submitted (UI only)", "Lost item report will be saved to database in the next step.");
-  };
+  const handleSubmit = async () => {
+  try {
+    await createItem({
+      type: "lost",
+      itemName: itemName.trim(),
+      category: category.trim(),
+      location: location.trim(),
+      description: description.trim(),
+      imageUrl: "",
+    });
+
+    Alert.alert("Success", "Lost item report submitted successfully.");
+
+    // Clear the form after success
+    setItemName("");
+    setCategory("");
+    setLocation("");
+    setDescription("");
+  } catch (error: any) {
+    Alert.alert("Submission Failed", error.message || "Something went wrong");
+  }
+};
 
   return (
     <View style={styles.container}>
