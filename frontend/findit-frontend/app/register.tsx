@@ -55,7 +55,7 @@ export default function Register() {
   });
 
   Alert.alert("Account created", "Your account was created. Please log in.", [
-    { text: "Go to Login", onPress: () => router.replace("/") },
+    { text: "Go to Login", onPress: () => router.replace("/login") },
   ]);
 } catch (err: any) {
   Alert.alert("Register failed", err.message || "Something went wrong");
@@ -113,7 +113,7 @@ export default function Register() {
       </TouchableOpacity>
 
       <Text style={styles.bottomText}>Already have an account?</Text>
-      <Link href="/" style={styles.link}>
+      <Link href="/login" style={styles.link}>
         Log In
       </Link>
     </View>

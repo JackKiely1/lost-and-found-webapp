@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /* ---------- REGISTER USER ---------- */
 
@@ -45,4 +46,10 @@ export async function loginUser(userData: {
   }
 
   return data;
+}
+
+/* ---------- LOGOUT USER ---------- */
+
+export async function logoutUser() {
+  await AsyncStorage.removeItem("token");
 }
