@@ -26,3 +26,15 @@ export async function createItem(itemData: ItemData) {
 
   return data;
 }
+
+export async function getItems() {
+  const response = await fetch(`${API_BASE_URL}/items`);
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch items");
+  }
+
+  return data.items;
+}

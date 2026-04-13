@@ -44,4 +44,16 @@ router.post(
   })
 );
 
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const items = await Item.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      items,
+    });
+  })
+);
+
 export default router;
