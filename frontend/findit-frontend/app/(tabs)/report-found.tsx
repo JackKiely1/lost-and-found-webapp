@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { createItem } from "../../src/services/itemService";
 
 export default function ReportFoundItem() {
   const [itemName, setItemName] = useState("");
@@ -16,9 +17,27 @@ export default function ReportFoundItem() {
     );
   }, [itemName, category, location, description]);
 
-  const handleSubmit = () => {
-    Alert.alert("Submitted (UI only)", "Found item report will be saved to database in the next step.");
-  };
+const handleSubmit = async () => {
+  try {
+    await createItem({
+      type: "found",
+      itemName: itemName.trim(),
+      category: category.trim(),
+      location: location.trim(),
+      description: description.trim(),
+      imageUrl: "",
+    });
+
+    Alert.alert("Success", "Found item report submitted successfully.");
+
+    setItemName("");
+    setCategory("");
+    setLocation("");
+    setDescription("");
+  } catch (error: any) {
+    Alert.alert("Submission Failed", error.message || "Something went wrong");
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -46,7 +65,7 @@ export default function ReportFoundItem() {
       <Text style={styles.label}>Location</Text>
       <TextInput
         style={styles.input}
-        placeholder="Where was the item last seen?"
+        placeholder="Where was the item found?"
         placeholderTextColor="#888"
         value={location}
         onChangeText={setLocation}
