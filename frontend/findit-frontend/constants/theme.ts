@@ -1,48 +1,55 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+import { Platform } from "react-native";
 
-import { Platform } from 'react-native';
+const tintColourLight = "#0b5884";
+const tintColourDark = "#FFFFFF";
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
+export const Colours = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    text: "#1f2a44",
+    background: "#FFFFFF",
+    tint: tintColourLight,
+    icon: "#435465",
+    tabIconDefault: "#435465",
+    tabIconSelected: tintColourLight,
+
+    primary: "#0b5884",
+    secondary: "#378b84",
+    accent: "#fcca3a",
+    surface: "#435465",
+    border: "#DDD",
+    lightGray: "#F4F4F4",
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: "#FFFFFF",
+    background: "#1f2a44",
+    tint: tintColourDark,
+    icon: "#fcca3a",
+    tabIconDefault: "#CCCCCC",
+    tabIconSelected: tintColourDark,
+
+    primary: "#FFFFFF",
+    secondary: "#378b84",
+    accent: "#fcca3a",
+    surface: "#435465",
+    border: "#666",
+    lightGray: "#2A344A",
   },
 };
 
+export const Colors = Colours;
+
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+    sans: "system-ui",
+    serif: "ui-serif",
+    rounded: "ui-rounded",
+    mono: "ui-monospace",
   },
   default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+    sans: "normal",
+    serif: "serif",
+    rounded: "normal",
+    mono: "monospace",
   },
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",

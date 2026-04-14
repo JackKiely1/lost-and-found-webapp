@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { getItems } from "../../src/services/itemService";
+import { Colours } from "@/constants/theme";
 
 export default function FoundItemsScreen() {
   const [items, setItems] = useState<any[]>([]);
@@ -49,7 +50,7 @@ export default function FoundItemsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colours.light.background,
   },
   content: {
     padding: 20,
@@ -58,43 +59,43 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#333",
+    color: Colours.light.primary,
     marginBottom: 6,
   },
   subtitle: {
     fontSize: 14,
-    color: "#666",
+    color: Colours.light.text,
     marginBottom: 18,
   },
   emptyText: {
     fontSize: 15,
-    color: "#666",
+    color: Colours.light.surface,
     textAlign: "center",
     marginTop: 30,
   },
   card: {
-    backgroundColor: "#F4F4F4",
+    backgroundColor: Colours.light.lightGray,
     borderRadius: 12,
     padding: 16,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: "#DDD",
+    borderColor: Colours.light.border,
   },
   itemName: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#222",
+    color: Colours.light.primary,
     marginBottom: 10,
   },
   label: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#555",
+    color: Colours.light.secondary,
     marginTop: 6,
   },
   value: {
     fontSize: 15,
-    color: "#333",
+    color: Colours.light.text,
     marginTop: 2,
   },
 });

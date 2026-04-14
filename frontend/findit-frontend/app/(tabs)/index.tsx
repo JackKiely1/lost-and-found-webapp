@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
+import { Colours } from "@/constants/theme";
 
 export default function HomeTab() {
   return (
@@ -35,27 +36,52 @@ export default function HomeTab() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: "#fff" },
-  title: { fontSize: 26, fontWeight: "700", marginBottom: 6, color: "#333" },
-  subtitle: { fontSize: 14, color: "#555", marginBottom: 18 },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: Colours.light.background,
+  },
+
+  title: {
+    fontSize: 26,
+    fontWeight: "700",
+    marginBottom: 6,
+    color: Colours.light.primary,
+  },
+
+  subtitle: {
+    fontSize: 14,
+    color: Colours.light.text,
+    marginBottom: 18,
+  },
+
   button: {
     height: 50,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: Colours.light.secondary,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
   },
-  buttonText: { fontWeight: "700", color: "#333" },
+
+  buttonText: {
+    fontWeight: "700",
+    color: Colours.light.background,
+  },
+
   secondaryButton: {
     height: 46,
-    backgroundColor: "#F2F2F2",
+    backgroundColor: Colours.light.lightGray,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#CCC",
+    borderColor: Colours.light.border,
   },
-  secondaryText: { fontWeight: "600", color: "#333" },
+
+  secondaryText: {
+    fontWeight: "600",
+    color: Colours.light.primary,
+  },
 });

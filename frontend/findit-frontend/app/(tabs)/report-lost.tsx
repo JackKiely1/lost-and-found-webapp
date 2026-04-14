@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
 import { createItem } from "../../src/services/itemService";
+import { Colours } from "@/constants/theme";
 
 export default function ReportLostItem() {
   const [itemName, setItemName] = useState("");
@@ -102,16 +103,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colours.light.background,
   },
   title: {
     fontSize: 22,
     fontWeight: "700",
     marginBottom: 6,
+    color: Colours.light.primary,
   },
   subtitle: {
     fontSize: 14,
-    color: "#555",
+    color: Colours.light.text,
     marginBottom: 16,
   },
   label: {
@@ -119,14 +121,16 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 6,
     marginTop: 10,
+    color: Colours.light.primary,
   },
   input: {
     height: 46,
-    backgroundColor: "#F2F2F2",
+    backgroundColor: Colours.light.lightGray,
     borderRadius: 8,
     paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: "#D0D0D0",
+    borderColor: Colours.light.border,
+    color: Colours.light.text,
   },
   textArea: {
     height: 90,
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     height: 46,
-    backgroundColor: "#E6E6E6",
+    backgroundColor: Colours.light.accent,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -143,11 +147,11 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     fontWeight: "600",
-    color: "#333",
+    color: Colours.light.primary,
   },
   submitButton: {
     height: 50,
-    backgroundColor: "#777",
+    backgroundColor: Colours.light.secondary,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -155,7 +159,7 @@ const styles = StyleSheet.create({
   },
   submitText: {
     fontWeight: "700",
-    color: "#fff",
+    color: Colours.light.background,
   },
   buttonDisabled: {
     opacity: 0.4,

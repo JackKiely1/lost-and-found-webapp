@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { logoutUser } from "../../src/services/authService"
+import { logoutUser } from "../../src/services/authService";
+import { Colours } from "@/constants/theme";
 
 export default function AccountScreen() {
   const router = useRouter();
@@ -31,15 +32,31 @@ export default function AccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: "#fff" },
-  title: { fontSize: 24, fontWeight: "700", marginBottom: 6, color: "#333" },
-  subtitle: { fontSize: 14, color: "#555", marginBottom: 20 },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: Colours.light.background,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 6,
+    color: Colours.light.primary,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: Colours.light.text,
+    marginBottom: 20,
+  },
   button: {
     height: 50,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: Colours.light.secondary,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonText: { fontWeight: "700", color: "#333" },
+  buttonText: {
+    fontWeight: "700",
+    color: Colours.light.background,
+  },
 });

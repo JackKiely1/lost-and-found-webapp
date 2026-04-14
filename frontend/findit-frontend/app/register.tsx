@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "reac
 import { isBasicEmailFormat, isSetuEmail } from "../src/utils/validators";
 import { Link, useRouter } from "expo-router";
 import { registerUser } from "../src/services/authService";
+import { Colours } from "@/constants/theme";
 
 
 export default function Register() {
@@ -125,29 +126,34 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: Colours.light.background,
   },
   title: {
     fontSize: 26,
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 6,
+    color: Colours.light.primary,
   },
   subtitle: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 24,
-    color: "#555",
+    color: Colours.light.text,
   },
   input: {
     height: 48,
-    backgroundColor: "#F2F2F2",
+    backgroundColor: Colours.light.lightGray,
     borderRadius: 8,
     marginBottom: 16,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: Colours.light.border,
+    color: Colours.light.text,
   },
   button: {
     height: 50,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: Colours.light.secondary,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -155,17 +161,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: "600",
+    color: Colours.light.background,
   },
   bottomText: {
     textAlign: "center",
     marginBottom: 6,
+    color: Colours.light.text,
   },
   link: {
     textAlign: "center",
     textDecorationLine: "underline",
     fontWeight: "600",
+    color: Colours.light.primary,
   },
-    buttonDisabled: {
+  buttonDisabled: {
     opacity: 0.5,
   },
 });
