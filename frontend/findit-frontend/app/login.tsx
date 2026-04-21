@@ -1,17 +1,14 @@
 import { useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
-import { isBasicEmailFormat, isSetuEmail } from "../src/utils/validators";
+import { isBasicEmailFormat, isSetuEmail } from "../src/utils/validators"
 import { Link, useRouter } from "expo-router";
-import { registerUser } from "../src/services/authService";
+import { loginUser } from "../src/services/authService";
 import { Colours } from "@/constants/theme";
 
-
-export default function Register() {
+export default function Login() {
   const router = useRouter();
-    const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const emailTrimmed = email.trim();
 
@@ -19,17 +16,16 @@ export default function Register() {
     return isBasicEmailFormat(emailTrimmed) && isSetuEmail(emailTrimmed);
   }, [emailTrimmed]);
 
-  const passwordsMatch = password.length > 0 && password === confirmPassword;
-
   const canSubmit =
-    fullName.trim().length > 0 &&
-    isEmailValid &&
-    password.length >= 6 &&
-    passwordsMatch;
+    emailTrimmed.length > 0 && password.length > 0 && isEmailValid;
 
-  const handleRegister = async () => {
-    if (!fullName.trim() || !emailTrimmed || !password || !confirmPassword) {
-      Alert.alert("Missing details", "Please complete all fields.");
+  const handleLogin = async () => {
+    if (!emailTrimmed || !password) {
+
+      Alert.alert(
+        "Missing details",
+        "Please enter your SETU email and password."
+      );
       return;
     }
     if (!isBasicEmailFormat(emailTrimmed)) {
@@ -40,41 +36,24 @@ export default function Register() {
       Alert.alert("SETU accounts only", "Please use your @setu.ie email.");
       return;
     }
-    if (password.length < 6) {
-      Alert.alert("Password too short", "Password must be at least 6 characters.");
-      return;
-    }
-    if (!passwordsMatch) {
-      Alert.alert("Passwords don't match", "Please ensure both passwords match.");
-      return;
-    }
-    try {
-  await registerUser({
-    fullName: fullName.trim(),
-    email: emailTrimmed,
-    password,
-  });
+    try { 
+  const data = await loginUser({ email: emailTrimmed, password });
 
-  Alert.alert("Account created", "Your account was created. Please log in.", [
-    { text: "Go to Login", onPress: () => router.replace("/login") },
-  ]);
+  Alert.alert("Login success", `Welcome ${data.user.fullName}`, [
+  {
+    text: "Continue",
+    onPress: () => router.replace("/(tabs)"),
+  },
+]);
+
 } catch (err: any) {
-  Alert.alert("Register failed", err.message || "Something went wrong");
+  Alert.alert("Login failed", err.message || "Something went wrong");
 }
   };
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account.</Text>
-      <Text style={styles.subtitle}>Sign up to start using FindIT.</Text>
-
-            <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        placeholderTextColor="#888"
-        autoCapitalize="words"
-        value={fullName}
-        onChangeText={setFullName}
-      />
+      <Text style={styles.title}>Welcome Back.</Text>
+      <Text style={styles.subtitle}>Log in to continue to FindIT.</Text>
 
       <TextInput
         style={styles.input}
@@ -89,33 +68,30 @@ export default function Register() {
 
       <TextInput
         style={styles.input}
-        placeholder="Password (min 6 chars)"
+        placeholder="Password"
         placeholderTextColor="#888"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        placeholderTextColor="#888"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
 
-
-       <TouchableOpacity
-        style={[styles.button, !canSubmit && styles.buttonDisabled]}
-        onPress={handleRegister}
-        disabled={!canSubmit}>
-       <Text style={styles.buttonText}>Create Account</Text>
+      <TouchableOpacity>
+        <Text style={styles.forgot}>Forgot password?</Text>
       </TouchableOpacity>
 
-      <Text style={styles.bottomText}>Already have an account?</Text>
-      <Link href="/login" style={styles.link}>
-        Log In
+<TouchableOpacity
+  style={[styles.button, !canSubmit && styles.buttonDisabled]}
+  onPress={handleLogin}
+  disabled={!canSubmit}
+>
+  <Text style={styles.buttonText}>Log in</Text>
+</TouchableOpacity>
+
+
+      <Text style={styles.bottomText}>Don't have an account?</Text>
+      <Link href="/register" style={styles.link}>
+        Register Here
       </Link>
     </View>
   );
@@ -150,6 +126,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colours.light.border,
     color: Colours.light.text,
+  },
+  forgot: {
+    textAlign: "right",
+    marginBottom: 16,
+    textDecorationLine: "underline",
+    color: Colours.light.secondary,
   },
   button: {
     height: 50,
