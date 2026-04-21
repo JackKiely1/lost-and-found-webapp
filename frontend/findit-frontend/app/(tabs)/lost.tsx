@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { getItems } from "../../src/services/itemService";
 import { Colours } from "@/constants/theme";
 
@@ -30,6 +30,9 @@ export default function LostItemsScreen() {
       ) : (
         items.map((item: any) => (
           <View key={item._id} style={styles.card}>
+    {item.imageUrl ? (
+      <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+    ) : null}
             <Text style={styles.itemName}>{item.itemName}</Text>
 
             <Text style={styles.label}>Category</Text>
@@ -98,4 +101,10 @@ const styles = StyleSheet.create({
     color: Colours.light.text,
     marginTop: 2,
   },
+itemImage: {
+  width: "100%",
+  height: 180,
+  borderRadius: 10,
+  marginBottom: 12,
+},
 });
