@@ -1,17 +1,22 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
+import multer from "multer";
+import cloudinary from "../config/cloudinary.js";
 import Item from "../models/itemModel.js";
 
-const router = express.Router();
 
+const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 /*
   POST /api/items
   Creates a new lost or found item report
 */
 router.post(
   "/",
+  upload.single("image"),
   asyncHandler(async (req, res) => {
-    const { type, itemName, category, location, description, imageUrl } = req.body;
+    const { type, itemName, category, location, description } = req.body;
 
     if (!type || !["lost", "found"].includes(type)) {
       return res.status(400).json({
@@ -25,6 +30,18 @@ router.post(
         success: false,
         msg: "Item name, category, and location are required.",
       });
+    }
+
+        let imageUrl = "";
+
+    if (req.file) {
+      const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+
+      const uploadResult = await cloudinary.uploader.upload(base64Image, {
+        folder: "findit-items",
+      });
+
+      imageUrl = uploadResult.secure_url;
     }
 
     const newItem = await Item.create({
