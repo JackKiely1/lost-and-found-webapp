@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
-import { createItem } from "../../src/services/itemService";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, ScrollView } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { API_BASE_URL } from "../../src/config/api";
 import { Colours } from "@/constants/theme";
 
 export default function ReportFoundItem() {
@@ -8,6 +9,7 @@ export default function ReportFoundItem() {
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState<any>(null);
 
   const canSubmit = useMemo(() => {
     return (
@@ -18,30 +20,67 @@ export default function ReportFoundItem() {
     );
   }, [itemName, category, location, description]);
 
+    const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+    if (!permissionResult.granted) {
+      Alert.alert("Permission required", "You need to allow access to photos.");
+      return;
+    }
+  
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 0.7,
+    });
+  
+    if (!result.canceled) {
+      setImage(result.assets[0]);
+    }
+  };
+
 const handleSubmit = async () => {
   try {
-    await createItem({
-      type: "found",
-      itemName: itemName.trim(),
-      category: category.trim(),
-      location: location.trim(),
-      description: description.trim(),
-      imageUrl: "",
+    const formData = new FormData();
+
+    formData.append("type", "found");
+    formData.append("itemName", itemName.trim());
+    formData.append("category", category.trim());
+    formData.append("location", location.trim());
+    formData.append("description", description.trim());
+
+    if (image) {
+      formData.append("image", {
+        uri: image.uri,
+        name: "upload.jpg",
+        type: "image/jpeg",
+      } as any);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/items`, {
+      method: "POST",
+      body: formData,
     });
 
-    Alert.alert("Success", "Found item report submitted successfully.");
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.msg || "Upload failed");
+    }
+
+    Alert.alert("Success", "found item report submitted successfully.");
 
     setItemName("");
     setCategory("");
     setLocation("");
     setDescription("");
+    setImage(null);
   } catch (error: any) {
     Alert.alert("Submission Failed", error.message || "Something went wrong");
   }
 };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Report Found Item</Text>
       <Text style={styles.subtitle}>Fill in the details below to report an item you have found</Text>
 
@@ -83,9 +122,19 @@ const handleSubmit = async () => {
       />
 
       <Text style={styles.label}>Image</Text>
-      <TouchableOpacity style={styles.uploadButton} onPress={() => Alert.alert("UI only", "Image upload will be added later.")}>
+      <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
         <Text style={styles.uploadText}>Upload Image</Text>
       </TouchableOpacity>
+
+      {image && (
+               <View>
+                 <Image source={{ uri: image.uri }} style={styles.previewImage} />
+                  <TouchableOpacity style={styles.removeButton} onPress={() => setImage(null)}>
+                 <Text style={styles.removeText}>Remove Image</Text>
+                </TouchableOpacity>
+              </View>
+                      )}
+      
 
       <TouchableOpacity
         style={[styles.submitButton, !canSubmit && styles.buttonDisabled]}
@@ -94,7 +143,7 @@ const handleSubmit = async () => {
       >
         <Text style={styles.submitText}>Submit Found Item</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -163,4 +212,20 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.4,
   },
+  previewImage: {
+  width: "100%",
+  height: 180,
+  borderRadius: 10,
+  marginTop: 10,
+},
+removeButton: {
+  marginTop: 8,
+  alignItems: "center",
+  padding: 8,
+},
+removeText: {
+  color: "red",
+  fontWeight: "600",
+  fontSize: 13,
+},
 });
