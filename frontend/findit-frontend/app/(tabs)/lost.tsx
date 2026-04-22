@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { getItems } from "../../src/services/itemService";
 import { Colours } from "@/constants/theme";
+import { useFocusEffect } from "expo-router";
+
 
 export default function LostItemsScreen() {
   const [items, setItems] = useState<any[]>([]);
 
-  useEffect(() => {
+useFocusEffect(
+  useCallback(() => {
     fetchItems();
-  }, []);
+  }, [])
+);
 
   const fetchItems = async () => {
     try {
