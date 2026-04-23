@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, Scro
 import * as ImagePicker from "expo-image-picker";
 import { API_BASE_URL } from "../../src/config/api";
 import { Colours } from "@/constants/theme";
+import { itemCategories } from "../../constants/categories"
 
 export default function ReportFoundItem() {
   const [itemName, setItemName] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(itemCategories[0]);
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<any>(null);
@@ -94,13 +95,19 @@ const handleSubmit = async () => {
       />
 
       <Text style={styles.label}>Category</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Select a category (e.g. Phone, Wallet)"
-        placeholderTextColor="#888"
-        value={category}
-        onChangeText={setCategory}
-      />
+      <View style={styles.categoryGrid}>
+        {itemCategories.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[styles.categoryButton, category === cat && styles.categoryButtonActive]}
+            onPress={() => setCategory(cat)}
+          >
+            <Text style={[styles.categoryButtonText, category === cat && styles.categoryButtonTextActive]}>
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <Text style={styles.label}>Location</Text>
       <TextInput
@@ -228,4 +235,30 @@ removeText: {
   fontWeight: "600",
   fontSize: 13,
 },
+categoryGrid: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  gap: 8,
+  marginBottom: 4,
+},
+ categoryButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colours.light.border,
+    backgroundColor: Colours.light.lightGray,
+  },
+  categoryButtonActive: {
+    backgroundColor: Colours.light.secondary,
+    borderColor: Colours.light.secondary,
+  },
+  categoryButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colours.light.text,
+  },
+  categoryButtonTextActive: {
+    color: Colours.light.background,
+  },
 });
