@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { API_BASE_URL } from "../../src/config/api";
 import { Colours } from "@/constants/theme";
@@ -81,7 +81,15 @@ const handleSubmit = async () => {
 };
 
   return (
-    <ScrollView style={styles.container}>
+    <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+  >
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       <Text style={styles.title}>Report Found Item</Text>
       <Text style={styles.subtitle}>Fill in the details below to report an item you have found</Text>
 
@@ -151,6 +159,7 @@ const handleSubmit = async () => {
         <Text style={styles.submitText}>Submit Found Item</Text>
       </TouchableOpacity>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
