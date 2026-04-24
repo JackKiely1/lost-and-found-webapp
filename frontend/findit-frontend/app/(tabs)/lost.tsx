@@ -1,12 +1,15 @@
-import { useCallback, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { useCallback, useState, useMemo } from "react";
+import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity } from "react-native";
 import { getItems } from "../../src/services/itemService";
 import { Colours } from "@/constants/theme";
 import { useFocusEffect } from "expo-router";
-
+import { itemCategories } from "../../constants/categories"
 
 export default function LostItemsScreen() {
   const [items, setItems] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
 
 useFocusEffect(
   useCallback(() => {
@@ -14,25 +17,84 @@ useFocusEffect(
   }, [])
 );
 
-  const fetchItems = async () => {
-    try {
-      const data = await getItems();
-      const lostItems = data.filter((item: any) => item.type === "lost");
-      setItems(lostItems);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+const fetchItems = async () => {
+  const data = await getItems();
+  setItems(data);
+};
+
+  
+  const filteredItems = useMemo(() => {
+  return items.filter((item: any) => {
+    return (
+      item.type === "lost" &&
+      item.itemName.toLowerCase().includes(searchText.toLowerCase()) &&
+      (selectedCategory === "All" || item.category === selectedCategory)
+    );
+  });
+}, [items, searchText, selectedCategory]);
+
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Lost Items</Text>
       <Text style={styles.subtitle}>Browse items reported as lost on campus.</Text>
 
-      {items.length === 0 ? (
-        <Text style={styles.emptyText}>No lost items reported yet.</Text>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search lost items..."
+        placeholderTextColor="#888"
+        value={searchText}
+        onChangeText={setSearchText}
+      />
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filterRow}
+      >
+        <TouchableOpacity
+          style={[
+            styles.filterButton,
+            selectedCategory === "All" && styles.filterButtonActive,
+          ]}
+          onPress={() => setSelectedCategory("All")}
+        >
+          <Text
+            style={[
+              styles.filterButtonText,
+              selectedCategory === "All" && styles.filterButtonTextActive,
+            ]}
+          >
+            All
+          </Text>
+        </TouchableOpacity>
+
+        {itemCategories.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[
+              styles.filterButton,
+              selectedCategory === cat && styles.filterButtonActive,
+            ]}
+            onPress={() => setSelectedCategory(cat)}
+          >
+            <Text
+              style={[
+                styles.filterButtonText,
+                selectedCategory === cat && styles.filterButtonTextActive,
+              ]}
+            >
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+
+      {filteredItems.length === 0 ? (
+        <Text style={styles.emptyText}>No lost items match your search or filter.</Text>
       ) : (
-        items.map((item: any) => (
+        filteredItems.map((item: any) => (
           <View key={item._id} style={styles.card}>
     {item.imageUrl ? (
       <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
@@ -110,5 +172,40 @@ itemImage: {
   height: 180,
   borderRadius: 10,
   marginBottom: 12,
+},
+searchInput: {
+  height: 46,
+  backgroundColor: Colours.light.lightGray,
+  borderRadius: 8,
+  paddingHorizontal: 12,
+  borderWidth: 1,
+  borderColor: Colours.light.border,
+  color: Colours.light.text,
+  marginBottom: 12,
+},
+filterRow: {
+  paddingBottom: 12,
+  gap: 8,
+},
+filterButton: {
+  paddingHorizontal: 14,
+  paddingVertical: 8,
+  borderRadius: 20,
+  borderWidth: 1,
+  borderColor: Colours.light.border,
+  backgroundColor: Colours.light.lightGray,
+  marginRight: 8,
+},
+filterButtonActive: {
+  backgroundColor: Colours.light.secondary,
+  borderColor: Colours.light.secondary,
+},
+filterButtonText: {
+  fontSize: 13,
+  fontWeight: "600",
+  color: Colours.light.text,
+},
+filterButtonTextActive: {
+  color: Colours.light.background,
 },
 });
