@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
-import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from "react-native";
+import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, KeyboardAvoidingView, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { API_BASE_URL } from "../../src/config/api";
 import { Colours } from "@/constants/theme";
+import { itemCategories } from "../../constants/categories"
 
 export default function ReportLostItem() {
   const [itemName, setItemName] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(itemCategories[0]);
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<any>(null);
@@ -80,7 +81,15 @@ const handleSubmit = async () => {
 };
 
   return (
-    <ScrollView style={styles.container}>
+  <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+  >
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       <Text style={styles.title}>Report Lost Item</Text>
       <Text style={styles.subtitle}>Fill in the details below to report an item you have lost</Text>
 
@@ -94,13 +103,19 @@ const handleSubmit = async () => {
       />
 
       <Text style={styles.label}>Category</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Select a category (e.g. Phone, Wallet)"
-        placeholderTextColor="#888"
-        value={category}
-        onChangeText={setCategory}
-      />
+      <View style={styles.categoryGrid}>
+        {itemCategories.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[styles.categoryButton, category === cat && styles.categoryButtonActive]}
+            onPress={() => setCategory(cat)}
+          >
+            <Text style={[styles.categoryButtonText, category === cat && styles.categoryButtonTextActive]}>
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <Text style={styles.label}>Location</Text>
       <TextInput
@@ -127,13 +142,13 @@ const handleSubmit = async () => {
       </TouchableOpacity>
 
       {image && (
-         <View>
-           <Image source={{ uri: image.uri }} style={styles.previewImage} />
-            <TouchableOpacity style={styles.removeButton} onPress={() => setImage(null)}>
-           <Text style={styles.removeText}>Remove Image</Text>
+        <View>
+          <Image source={{ uri: image.uri }} style={styles.previewImage} />
+          <TouchableOpacity style={styles.removeButton} onPress={() => setImage(null)}>
+            <Text style={styles.removeText}>Remove Image</Text>
           </TouchableOpacity>
         </View>
-                )}
+      )}
 
       <TouchableOpacity
         style={[styles.submitButton, !canSubmit && styles.buttonDisabled]}
@@ -143,7 +158,8 @@ const handleSubmit = async () => {
         <Text style={styles.submitText}>Submit Lost Item</Text>
       </TouchableOpacity>
     </ScrollView>
-  );
+  </KeyboardAvoidingView>
+);
 }
 
 const styles = StyleSheet.create({
@@ -226,4 +242,30 @@ removeText: {
   fontWeight: "600",
   fontSize: 13,
 },
+categoryGrid: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  gap: 8,
+  marginBottom: 4,
+},
+ categoryButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colours.light.border,
+    backgroundColor: Colours.light.lightGray,
+  },
+  categoryButtonActive: {
+    backgroundColor: Colours.light.secondary,
+    borderColor: Colours.light.secondary,
+  },
+  categoryButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colours.light.text,
+  },
+  categoryButtonTextActive: {
+    color: Colours.light.background,
+  },
 });
