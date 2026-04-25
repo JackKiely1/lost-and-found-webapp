@@ -1,8 +1,8 @@
 import { Tabs } from "expo-router";
 import React from "react";
+import { Ionicons } from "@expo/vector-icons"
 
 import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colours } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
@@ -27,7 +27,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <Ionicons size={28} name="home" color={color} />
           ),
         }}
       />
@@ -37,7 +37,7 @@ export default function TabLayout() {
         options={{
           title: "Lost",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="magnifyingglass" color={color} />
+            <Ionicons size={28} name="search" color={color} />
           ),
         }}
       />
@@ -47,7 +47,7 @@ export default function TabLayout() {
         options={{
           title: "Found",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="checkmark.circle.fill" color={color} />
+            <Ionicons size={28} name="checkmark-circle" color={color} />
           ),
         }}
       />
@@ -57,7 +57,7 @@ export default function TabLayout() {
         options={{
           title: "Report Lost",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="plus.circle.fill" color={color} />
+            <Ionicons size={28} name="add-circle" color={color} />
           ),
         }}
       />
@@ -67,7 +67,7 @@ export default function TabLayout() {
         options={{
           title: "Report Found",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="plus.circle" color={color} />
+            <Ionicons size={28} name="add-circle-outline" color={color} />
           ),
         }}
       />
@@ -77,7 +77,7 @@ export default function TabLayout() {
   options={{
     title: "Account",
     tabBarIcon: ({ color }) => (
-      <IconSymbol size={28} name="person.fill" color={color} />
+      <Ionicons size={28} name="person" color={color} />
     ),
   }}
 />

@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
-import { createItem } from "../../src/services/itemService";
+import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, KeyboardAvoidingView, Platform } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { API_BASE_URL } from "../../src/config/api";
 import { Colours } from "@/constants/theme";
+import { itemCategories } from "../../constants/categories"
 
 export default function ReportLostItem() {
   const [itemName, setItemName] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(itemCategories[0]);
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState<any>(null);
 
   const canSubmit = useMemo(() => {
     return (
@@ -18,31 +21,75 @@ export default function ReportLostItem() {
     );
   }, [itemName, category, location, description]);
 
-  const handleSubmit = async () => {
+  const pickImage = async () => {
+  const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  if (!permissionResult.granted) {
+    Alert.alert("Permission required", "You need to allow access to photos.");
+    return;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    quality: 0.7,
+  });
+
+  if (!result.canceled) {
+    setImage(result.assets[0]);
+  }
+};
+
+const handleSubmit = async () => {
   try {
-    await createItem({
-      type: "lost",
-      itemName: itemName.trim(),
-      category: category.trim(),
-      location: location.trim(),
-      description: description.trim(),
-      imageUrl: "",
+    const formData = new FormData();
+
+    formData.append("type", "lost");
+    formData.append("itemName", itemName.trim());
+    formData.append("category", category.trim());
+    formData.append("location", location.trim());
+    formData.append("description", description.trim());
+
+    if (image) {
+      formData.append("image", {
+        uri: image.uri,
+        name: "upload.jpg",
+        type: "image/jpeg",
+      } as any);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/items`, {
+      method: "POST",
+      body: formData,
     });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.msg || "Upload failed");
+    }
 
     Alert.alert("Success", "Lost item report submitted successfully.");
 
-    // Clear the form after success
     setItemName("");
     setCategory("");
     setLocation("");
     setDescription("");
+    setImage(null);
   } catch (error: any) {
     Alert.alert("Submission Failed", error.message || "Something went wrong");
   }
 };
 
   return (
-    <View style={styles.container}>
+  <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+  >
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       <Text style={styles.title}>Report Lost Item</Text>
       <Text style={styles.subtitle}>Fill in the details below to report an item you have lost</Text>
 
@@ -56,13 +103,19 @@ export default function ReportLostItem() {
       />
 
       <Text style={styles.label}>Category</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Select a category (e.g. Phone, Wallet)"
-        placeholderTextColor="#888"
-        value={category}
-        onChangeText={setCategory}
-      />
+      <View style={styles.categoryGrid}>
+        {itemCategories.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[styles.categoryButton, category === cat && styles.categoryButtonActive]}
+            onPress={() => setCategory(cat)}
+          >
+            <Text style={[styles.categoryButtonText, category === cat && styles.categoryButtonTextActive]}>
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <Text style={styles.label}>Location</Text>
       <TextInput
@@ -84,9 +137,18 @@ export default function ReportLostItem() {
       />
 
       <Text style={styles.label}>Image</Text>
-      <TouchableOpacity style={styles.uploadButton} onPress={() => Alert.alert("UI only", "Image upload will be added later.")}>
+      <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
         <Text style={styles.uploadText}>Upload Image</Text>
       </TouchableOpacity>
+
+      {image && (
+        <View>
+          <Image source={{ uri: image.uri }} style={styles.previewImage} />
+          <TouchableOpacity style={styles.removeButton} onPress={() => setImage(null)}>
+            <Text style={styles.removeText}>Remove Image</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <TouchableOpacity
         style={[styles.submitButton, !canSubmit && styles.buttonDisabled]}
@@ -95,13 +157,13 @@ export default function ReportLostItem() {
       >
         <Text style={styles.submitText}>Submit Lost Item</Text>
       </TouchableOpacity>
-    </View>
-  );
+    </ScrollView>
+  </KeyboardAvoidingView>
+);
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
     backgroundColor: Colours.light.background,
   },
@@ -163,5 +225,47 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.4,
+  },
+  previewImage: {
+  width: "100%",
+  height: 180,
+  borderRadius: 10,
+  marginTop: 10,
+},
+removeButton: {
+  marginTop: 8,
+  alignItems: "center",
+  padding: 8,
+},
+removeText: {
+  color: "red",
+  fontWeight: "600",
+  fontSize: 13,
+},
+categoryGrid: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  gap: 8,
+  marginBottom: 4,
+},
+ categoryButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colours.light.border,
+    backgroundColor: Colours.light.lightGray,
+  },
+  categoryButtonActive: {
+    backgroundColor: Colours.light.secondary,
+    borderColor: Colours.light.secondary,
+  },
+  categoryButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colours.light.text,
+  },
+  categoryButtonTextActive: {
+    color: Colours.light.background,
   },
 });

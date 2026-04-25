@@ -1,0 +1,17 @@
+export const itemCategories = [
+  "Phone",
+  "Laptop / Tablet",
+  "Headphones / Earbuds",
+  "Charger / Cable",
+  "Wallet / Purse",
+  "Keys",
+  "ID / Student Card",
+  "Bag / Backpack",
+  "Clothing",
+  "Jewellery / Watch",
+  "Books / Notes",
+  "Water Bottle / Lunch Box",
+  "Umbrella",
+  "Sports Equipment",
+  "Other",
+];
