@@ -67,7 +67,7 @@ router.post(
 router.get(
   "/",
   asyncHandler(async (req, res) => {
-    const items = await Item.find().sort({ createdAt: -1 });
+    const items = await Item.find().populate("reportedBy", "fullName email").sort({ createdAt: -1 });
 
     res.json({
       success: true,
