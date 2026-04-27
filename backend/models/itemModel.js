@@ -7,6 +7,11 @@ const ItemSchema = new mongoose.Schema(
       enum: ["lost", "found"],
       required: true,
     },
+    reportedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     itemName: {
       type: String,
       required: true,
