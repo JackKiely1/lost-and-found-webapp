@@ -1,9 +1,20 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, StyleSheet, Image, View } from "react-native";
+import { ScrollView, Text, StyleSheet, Image, View, TouchableOpacity, Linking } from "react-native";
 import { Colours } from "@/constants/theme";
 
 export default function ItemDetailScreen() {
   const params = useLocalSearchParams();
+
+  const reportedByName = params.reportedByName as string;
+  const reportedByEmail = params.reportedByEmail as string;
+
+const handleContactReporter = () => {
+  if (!reportedByEmail) return;
+
+  Linking.openURL(
+    `mailto:${reportedByEmail}?subject=FindIT Item Enquiry - ${params.itemName}`
+  );
+};
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -26,6 +37,12 @@ export default function ItemDetailScreen() {
 
         <Text style={styles.label}>Description</Text>
         <Text style={styles.value}>{params.description}</Text>
+
+        {reportedByEmail ? (
+        <TouchableOpacity style={styles.contactButton} onPress={handleContactReporter}>
+        <Text style={styles.contactButtonText}>Contact Reporter</Text>
+         </TouchableOpacity>
+        ) : null}
         
       </View>
     </ScrollView>
@@ -85,4 +102,16 @@ const styles = StyleSheet.create({
     color: Colours.light.text,
     marginTop: 2,
   },
+  contactButton: {
+  height: 48,
+  backgroundColor: Colours.light.secondary,
+  borderRadius: 10,
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: 16,
+},
+contactButtonText: {
+  color: Colours.light.background,
+  fontWeight: "700",
+},
 });
