@@ -122,6 +122,8 @@ const fetchItems = async () => {
               description: item.description,
               type: item.type,
               imageUrl: item.imageUrl || "",
+              reportedByName: item.reportedBy?.fullName || "",
+              reportedByEmail: item.reportedBy?.email || "",
             },
           })
         }
