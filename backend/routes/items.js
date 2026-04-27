@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
 import Item from "../models/itemModel.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const upload = multer({ storage });
 */
 router.post(
   "/",
+  protect,
   upload.single("image"),
   asyncHandler(async (req, res) => {
     const { type, itemName, category, location, description } = req.body;
@@ -46,6 +48,7 @@ router.post(
 
     const newItem = await Item.create({
       type,
+      reportedBy: req.user._id,
       itemName,
       category,
       location,
