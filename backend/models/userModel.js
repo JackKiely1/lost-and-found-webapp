@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, unique: true, required: true, lowercase: true, trim: true },
   password: { type: String, required: true },
-  role: { type: String, default: "user" }, // user/admin 
+  role: { type: String, enum:["user", "admin"], default: "user" }, // user/admin 
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -17,22 +17,6 @@ UserSchema.methods.comparePassword = async function (passw) {
 UserSchema.statics.findByEmail = function (email) {
   return this.findOne({ email: email.toLowerCase().trim() });
 };
-
-
-// UserSchema.pre("save", async function (next) {
-//   const saltRounds = 10;
-//   if (this.isModified("password") || this.isNew) {
-//     try {
-//       const hash = await bcrypt.hash(this.password, saltRounds);
-//       this.password = hash;
-//       next();
-//     } catch (err) {
-//       next(err);
-//     }
-//   } else {
-//     next();
-//   }
-// });
 
 UserSchema.pre("save", async function () {
   // hash if password is new/changed
