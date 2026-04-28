@@ -49,6 +49,10 @@ export async function loginUser(userData: {
   await AsyncStorage.setItem("token", data.token);
   }
 
+  if (data.user) {
+  await AsyncStorage.setItem("user", JSON.stringify(data.user));
+}
+
   return data;
 }
 
