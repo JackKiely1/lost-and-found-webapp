@@ -112,4 +112,19 @@ router.patch(
   })
 );
 
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const items = await Item.find({status: "approved"})
+      .populate("reportedBy", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      items,
+    });
+  })
+);
+
+
 export default router;
