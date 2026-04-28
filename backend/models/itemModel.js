@@ -38,7 +38,7 @@ const ItemSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "claimed"],
+      enum: ["pending", "approved", "claimed", "rejected"],
       default: "pending",
     },
   },
