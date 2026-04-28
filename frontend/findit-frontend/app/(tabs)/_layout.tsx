@@ -6,8 +6,26 @@ import { HapticTab } from "@/components/haptic-tab";
 import { Colours } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+  const loadUser = async () => {
+    const storedUser = await AsyncStorage.getItem("user");
+
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setIsAdmin(user.role === "admin");
+    }
+  };
+
+  loadUser();
+}, []);
+
 
   return (
     <Tabs
@@ -86,6 +104,7 @@ export default function TabLayout() {
   name="admin"
   options={{
     title: "Admin",
+    href: isAdmin ? "/admin" : null,
     tabBarIcon: ({ color }) => (
       <Ionicons size={28} name="shield-checkmark" color={color} />
     ),
