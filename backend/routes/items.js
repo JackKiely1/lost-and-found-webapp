@@ -4,7 +4,7 @@ import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
 import Item from "../models/itemModel.js";
 import { protect } from "../middleware/authMiddleware.js";
-
+import { adminOnly } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -65,13 +65,49 @@ router.post(
 );
 
 router.get(
-  "/",
+  "/admin/pending",
+  protect,
+  adminOnly,
   asyncHandler(async (req, res) => {
-    const items = await Item.find().populate("reportedBy", "fullName email").sort({ createdAt: -1 });
+    const items = await Item.find({status: "pending"}).populate("reportedBy", "fullName email").sort({ createdAt: -1 });
 
     res.json({
       success: true,
       items,
+    });
+  })
+);
+
+router.patch(
+  "/:id/status",
+  protect,
+  adminOnly,
+  asyncHandler(async (req, res) => {
+    const { status } = req.body;
+
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid status",
+      });
+    }
+
+    const item = await Item.findById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        msg: "Item not found",
+      });
+    }
+
+    item.status = status;
+    await item.save();
+
+    res.json({
+      success: true,
+      msg: `Item ${status}`,
+      item,
     });
   })
 );
