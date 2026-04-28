@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import { API_BASE_URL } from "../../src/config/api";
 import { Colours } from "@/constants/theme";
 import { itemCategories } from "../../constants/categories"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ReportLostItem() {
   const [itemName, setItemName] = useState("");
@@ -57,8 +58,13 @@ const handleSubmit = async () => {
       } as any);
     }
 
+    const token = await AsyncStorage.getItem("token");
+    
     const response = await fetch(`${API_BASE_URL}/items`, {
       method: "POST",
+      headers: {
+      Authorization: token || "",
+      },
       body: formData,
     });
 

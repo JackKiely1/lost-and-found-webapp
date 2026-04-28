@@ -2,7 +2,7 @@ import { useCallback, useState, useMemo } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity } from "react-native";
 import { getItems } from "../../src/services/itemService";
 import { Colours } from "@/constants/theme";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, router } from "expo-router";
 import { itemCategories } from "../../constants/categories";
 
 export default function FoundItemsScreen() {
@@ -94,21 +94,45 @@ useFocusEffect(
       {filteredItems.length === 0 ? (
         <Text style={styles.emptyText}>No found items match your search or filter.</Text>
       ) : (
-        filteredItems.map((item: any) => (
+filteredItems.map((item: any) => (
           <View key={item._id} style={styles.card}>
-              {item.imageUrl ? (
-                <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
-              ) : null}
+    {item.imageUrl ? (
+      <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+    ) : null}
             <Text style={styles.itemName}>{item.itemName}</Text>
 
             <Text style={styles.label}>Category</Text>
             <Text style={styles.value}>{item.category}</Text>
 
+            <View style ={styles.cardFooter}>
+            <View>
             <Text style={styles.label}>Location</Text>
             <Text style={styles.value}>{item.location}</Text>
+            </View>
+                  <TouchableOpacity
+        style={styles.detailsButton}
+        onPress={() =>
+          router.push({
+            pathname: "/item/[id]",
+            params: {
+              id: item._id,
+              itemName: item.itemName,
+              category: item.category,
+              location: item.location,
+              description: item.description,
+              type: item.type,
+              imageUrl: item.imageUrl || "",
+              reportedByName: item.reportedBy?.fullName || "",
+              reportedByEmail: item.reportedBy?.email || "",
+            },
+          })
+        }
+      >
+        <Text style={styles.detailsButtonText}>View Details</Text>
+      </TouchableOpacity>
 
-            <Text style={styles.label}>Description</Text>
-            <Text style={styles.value}>{item.description}</Text>
+      </View>     
+
           </View>
         ))
       )}
@@ -208,4 +232,23 @@ const styles = StyleSheet.create({
   filterButtonTextActive: {
     color: Colours.light.background,
   },
+  cardFooter: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-end",
+  gap: 12,
+},
+
+detailsButton: {
+  backgroundColor: Colours.light.secondary,
+  borderRadius: 10,
+  paddingHorizontal: 14,
+  paddingVertical: 10,
+},
+
+detailsButtonText: {
+  color: Colours.light.background,
+  fontWeight: "700",
+  fontSize: 13,
+},
 });

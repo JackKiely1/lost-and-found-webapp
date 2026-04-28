@@ -45,6 +45,10 @@ export async function loginUser(userData: {
     throw new Error(data.msg || "Login failed");
   }
 
+  if (data.token) {
+  await AsyncStorage.setItem("token", data.token);
+  }
+
   return data;
 }
 
