@@ -1,10 +1,24 @@
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logoutUser } from "../../src/services/authService";
 import { Colours } from "@/constants/theme";
 
 export default function AccountScreen() {
   const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+    const loadUser = async () => {
+      const storedUser = await AsyncStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+
+    loadUser();
+  }, []);
 
   const handleLogout = async () => {
     Alert.alert("Log Out", "Are you sure you want to log out?", [
@@ -20,10 +34,24 @@ export default function AccountScreen() {
     ]);
   };
 
-  return (
+return (
     <View style={styles.container}>
       <Text style={styles.title}>Account</Text>
-      <Text style={styles.subtitle}>Manage your session</Text>
+      <Text style={styles.subtitle}>Manage your FindIT account and session.</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>Name</Text>
+        <Text style={styles.value}>{user?.fullName || "Not available"}</Text>
+
+        <Text style={styles.label}>Email</Text>
+        <Text style={styles.value}>{user?.email || "Not available"}</Text>
+
+        <Text style={styles.label}>Role</Text>
+        <Text style={styles.value}>
+          {user?.role === "admin" ? "Admin" : "User"}
+        </Text>
+      </View>
+
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Log Out</Text>
       </TouchableOpacity>
@@ -58,5 +86,24 @@ const styles = StyleSheet.create({
   buttonText: {
     fontWeight: "700",
     color: Colours.light.background,
+  },
+   card: {
+    backgroundColor: Colours.light.lightGray,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colours.light.border,
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: Colours.light.secondary,
+    marginTop: 8,
+  },
+  value: {
+    fontSize: 16,
+    color: Colours.light.text,
+    marginTop: 2,
   },
 });

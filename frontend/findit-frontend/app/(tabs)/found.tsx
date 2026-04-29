@@ -124,6 +124,7 @@ filteredItems.map((item: any) => (
               imageUrl: item.imageUrl || "",
               reportedByName: item.reportedBy?.fullName || "",
               reportedByEmail: item.reportedBy?.email || "",
+              reportedById: item.reportedBy?._id || "",
             },
           })
         }
