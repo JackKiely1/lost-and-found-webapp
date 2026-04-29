@@ -112,6 +112,40 @@ router.patch(
   })
 );
 
+router.patch(
+  "/:id/claim",
+  protect,
+  asyncHandler(async (req, res) => {
+    const item = await Item.findById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        msg: "Item not found",
+      });
+    }
+
+    const isOwner = item.reportedBy.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        msg: "You can only mark your own reports as claimed.",
+      });
+    }
+
+    item.status = "claimed";
+    await item.save();
+
+    res.json({
+      success: true,
+      msg: "Item marked as claimed.",
+      item,
+    });
+  })
+);
+
 router.get(
   "/",
   asyncHandler(async (req, res) => {
