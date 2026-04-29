@@ -73,7 +73,7 @@ const handleSubmit = async () => {
       throw new Error(data.msg || "Upload failed");
     }
 
-    Alert.alert("Success", "found item report submitted successfully.");
+    Alert.alert("Report Submitted","Your report has been submitted for review. It will appear publicly once approved by an admin.");
 
     setItemName("");
     setCategory("");
