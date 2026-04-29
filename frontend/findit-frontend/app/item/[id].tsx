@@ -1,13 +1,41 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, StyleSheet, Image, View, TouchableOpacity, Linking } from "react-native";
+import { ScrollView, Text, StyleSheet, Image, View, TouchableOpacity, Linking, Alert } from "react-native";
 import { Colours } from "@/constants/theme";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import { API_BASE_URL } from "../../src/config/api";
 
 export default function ItemDetailScreen() {
   const params = useLocalSearchParams();
+  // Stores the currently logged-in user, loaded from AsyncStorage
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
+  const itemId = params.id as string;
   const reportedByName = params.reportedByName as string;
   const reportedByEmail = params.reportedByEmail as string;
+  const reportedById = params.reportedById as string;
 
+  // Load the logged-in user
+useEffect(() => {
+    const loadUser = async () => {
+      const storedUser = await AsyncStorage.getItem("user");
+
+      if (storedUser) {
+        setCurrentUser(JSON.parse(storedUser));
+      }
+    };
+
+    loadUser();
+  }, []);
+
+const currentUserId = currentUser?._id || currentUser?.id;
+
+// Only the reporter who submitted the item, or an admin, can mark it as claimed
+const canMarkClaimed =
+currentUserId === reportedById || currentUser?.role === "admin";
+
+// Opens the default mail client pre-filled with the reporter's address and item subject
 const handleContactReporter = () => {
   if (!reportedByEmail) return;
 
@@ -15,6 +43,50 @@ const handleContactReporter = () => {
     `mailto:${reportedByEmail}?subject=FindIT Item Enquiry - ${params.itemName}`
   );
 };
+
+// Confirms intended action, then sends a PATCH request to mark the item as claimed
+const handleMarkClaimed = async () => {
+    Alert.alert(
+      "Mark as Claimed",
+      "Are you sure this item has been claimed? It will no longer appear publicly.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Mark Claimed",
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem("token");
+
+              const response = await fetch(
+                `${API_BASE_URL}/items/${itemId}/claim`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    Authorization: token || "",
+                  },
+                }
+              );
+
+              const data = await response.json();
+
+              if (!response.ok) {
+                throw new Error(data.msg || "Failed to mark item as claimed.");
+              }
+
+              Alert.alert("Updated", "Item marked as claimed.", [
+                {
+                  text: "OK",
+                  onPress: () => router.back(),
+                },
+              ]);
+            } catch (error: any) {
+              Alert.alert("Error", error.message || "Something went wrong.");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -43,6 +115,14 @@ const handleContactReporter = () => {
         <Text style={styles.contactButtonText}>Contact Reporter</Text>
          </TouchableOpacity>
         ) : null}
+
+
+        {/* Show claim button only to the reporter or an admin */}
+        {canMarkClaimed && (
+          <TouchableOpacity style={styles.claimButton} onPress={handleMarkClaimed}>
+            <Text style={styles.claimButtonText}>Mark as Claimed</Text>
+          </TouchableOpacity>
+        )}
         
       </View>
     </ScrollView>
@@ -114,4 +194,16 @@ contactButtonText: {
   color: Colours.light.background,
   fontWeight: "700",
 },
+  claimButton: {
+    height: 48,
+    backgroundColor: Colours.light.primary,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 12,
+  },
+  claimButtonText: {
+    color: Colours.light.background,
+    fontWeight: "700",
+  },
 });
