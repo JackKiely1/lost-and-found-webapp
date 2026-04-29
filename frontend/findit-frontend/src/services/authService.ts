@@ -61,3 +61,5 @@ export async function loginUser(userData: {
 export async function logoutUser() {
   await AsyncStorage.removeItem("token");
 }
+
+// Lab Reference: https://tutors.dev/lab/web-app-dev-2/topic-10-authentication/book-01/Register%20Authenticate

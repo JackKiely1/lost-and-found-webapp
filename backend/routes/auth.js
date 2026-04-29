@@ -78,3 +78,5 @@ router.post(
 );
 
 export default router;
+
+// Lab Reference: https://tutors.dev/lab/web-app-dev-2/topic-10-authentication/book-01/Authentication%20Middleware

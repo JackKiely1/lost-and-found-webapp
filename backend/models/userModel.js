@@ -28,3 +28,6 @@ UserSchema.pre("save", async function () {
 
 
 export default mongoose.model("User", UserSchema);
+
+// Lab Reference: https://tutors.dev/lab/web-app-dev-2/topic-10-authentication/book-01/User%20Router
+// Salt/Hash:     https://tutors.dev/lab/web-app-dev-2/topic-10-authentication/book-01/Salt%20&%20Hash
