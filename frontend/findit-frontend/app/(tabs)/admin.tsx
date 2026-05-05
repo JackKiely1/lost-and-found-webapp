@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "expo-router";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Image,} from "react-native";
 import { API_BASE_URL } from "../../src/config/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -45,9 +46,11 @@ export default function AdminScreen() {
     }
   };
 
-  useEffect(() => {
+useFocusEffect(
+  useCallback(() => {
     fetchPending();
-  }, []);
+  }, [])
+);
 
   const updateStatus = async (id: string, status: "approved" | "rejected") => {
     try {

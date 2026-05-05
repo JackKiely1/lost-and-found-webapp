@@ -106,11 +106,11 @@ export default function Register() {
       />
 
 
-       <TouchableOpacity
+      <TouchableOpacity
         style={[styles.button, !canSubmit && styles.buttonDisabled]}
         onPress={handleRegister}
-        disabled={!canSubmit}>
-       <Text style={styles.buttonText}>Create Account</Text>
+      >
+      <Text style={styles.buttonText}>Create Account</Text>
       </TouchableOpacity>
 
       <Text style={styles.bottomText}>Already have an account?</Text>
